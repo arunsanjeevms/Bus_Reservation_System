@@ -117,28 +117,134 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
     <title>Bus Ticket Booking</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/styles/styles.css">
     <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('assets/img/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            color: #2563eb;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .card-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: #2563eb;
+            border-radius: 2px;
+        }
+
+        .form-select, .form-control {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .seat-layout {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+        }
+
         #seatsDiagram td {
-            border: 1px solid #ccc;
-            width: 40px;
-            height: 40px;
+            border: 2px solid #e5e7eb;
+            width: 45px;
+            height: 45px;
             text-align: center;
             cursor: pointer;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background-color: white;
         }
-        #seatsDiagram .space {
-            border: none;
-            background: transparent;
-            cursor: default;
+
+        #seatsDiagram td.booked {
+            background-color: #ef4444;
+            color: white;
+            border-color: #dc2626;
+            cursor: not-allowed;
+            opacity: 0.8;
         }
-        .selected-seat {
-            background-color: #28a745 !important;
-            color: white !important;
-        }
+
         #seatsDiagram td:not(.space):hover {
-            background-color: #e9ecef;
-            cursor: pointer;
+            background-color: #e5e7eb;
+            transform: scale(1.1);
+        }
+
+        .selected-seat {
+            background-color: #10b981 !important;
+            color: white !important;
+            border-color: #059669 !important;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            border: none;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            #seatsDiagram td {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -255,6 +361,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
                                 </tr>
                             </table>
                         </div>
+                        <label for="booked_seat" class="form-lab1el">Selected Seat</label>
                         <input type="hidden" id="seat_selected" name="seat_selected">
                         <input type="text" class="form-control mt-2" id="seatInput" readonly placeholder="Selected seat will appear here">
                     </div>

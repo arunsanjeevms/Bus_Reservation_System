@@ -97,9 +97,9 @@
             <div class="row">
                 <div class="col-xs-6 col-sm-6 col-md-6">
                     <address>
-                        <strong>S B T B S</strong>
+                        <strong>927623BCS011</strong>
                         <br>
-                        Detroit, Mi 4646
+                        DBMS PROJECT
                         
                     </address>
                 </div>
