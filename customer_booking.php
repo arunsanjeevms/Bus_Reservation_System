@@ -5,43 +5,106 @@ require 'assets/partials/_functions.php';
 $conn = db_connect();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
+    // Get all form fields
     $customer_name = $_POST["firstName"] . " " . $_POST["lastName"];
     $customer_phone = $_POST["phone"];
-    $route_id = $_POST["route_id"];
-    $route_source = $_POST["source"];
-    $route_destination = $_POST["destination"];
-    $route = $route_source . " &rarr; " . $route_destination;
+    $customer_email = $_POST["email"];
+    $gender = $_POST["gender"];
+    $blood_group = $_POST["bloodGroup"];
+    $differently_abled = $_POST["differentlyAbled"];
+    $route_source = $_POST["sourceSearch"];
+    $route_destination = $_POST["destinationSearch"];
     $booked_seat = $_POST["seat_selected"];
     $amount = $_POST["booked_amount"];
 
-    // First create the customer
-    $customerSql = "INSERT INTO `customers` (`customer_name`, `customer_phone`) VALUES ('$customer_name', '$customer_phone')";
-    $customerResult = mysqli_query($conn, $customerSql);
+    // Get route_id from the database
+    $routeQuery = "SELECT route_id, bus_no FROM routes WHERE 
+                   FIND_IN_SET('$route_source', REPLACE(route_cities, ' ', '')) > 0 
+                   AND FIND_IN_SET('$route_destination', REPLACE(route_cities, ' ', '')) > 0 
+                   LIMIT 1";
+    $routeResult = mysqli_query($conn, $routeQuery);
     
-    if ($customerResult) {
-        $customer_id = mysqli_insert_id($conn);
+    if($routeResult && mysqli_num_rows($routeResult) > 0) {
+        $routeData = mysqli_fetch_assoc($routeResult);
+        $route_id = $routeData['route_id'];
+        $bus_no = $routeData['bus_no'];
         
-        // Now create the booking
-        $bookingSql = "INSERT INTO `bookings` (`customer_id`, `route_id`, `customer_route`, `booked_amount`, `booked_seat`, `booking_created`) VALUES ('$customer_id', '$route_id', '$route', '$amount', '$booked_seat', current_timestamp())";
-        $bookingResult = mysqli_query($conn, $bookingSql);
+        // Create the route string
+        $route = $route_source . " → " . $route_destination;
+
+        // Generate customer ID
+        $lastCustomerQuery = "SELECT customer_id FROM customers ORDER BY id DESC LIMIT 1";
+        $lastCustomerResult = mysqli_query($conn, $lastCustomerQuery);
+        $lastCustomer = mysqli_fetch_assoc($lastCustomerResult);
         
-        if ($bookingResult) {
-            // Update the seats table
-            $bus_no = get_from_table($conn, "routes", "route_id", $route_id, "bus_no");
-            $seats = get_from_table($conn, "seats", "bus_no", $bus_no, "seat_booked");
-            if ($seats) {
-                $seats .= "," . $booked_seat;
-            } else {
-                $seats = $booked_seat;
-            }
-            $updateSeatSql = "UPDATE `seats` SET `seat_booked` = '$seats' WHERE `seats`.`bus_no` = '$bus_no'";
-            mysqli_query($conn, $updateSeatSql);
-            
-            echo '<div class="my-0 alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Success!</strong> Booking created successfully!
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>';
+        if ($lastCustomer) {
+            $lastNum = intval(substr($lastCustomer['customer_id'], -3)) + 1;
+        } else {
+            $lastNum = 1;
         }
+        
+        $customer_id = '927623BCS' . str_pad($lastNum, 3, '0', STR_PAD_LEFT);
+
+        // Create the customer
+        $customerSql = "INSERT INTO `customers` (`customer_id`, `customer_name`, `customer_phone`) VALUES ('$customer_id', '$customer_name', '$customer_phone')";
+        $customerResult = mysqli_query($conn, $customerSql);
+        
+        if ($customerResult) {
+            // Generate booking ID
+            $lastBookingQuery = "SELECT booking_id FROM bookings ORDER BY id DESC LIMIT 1";
+            $lastBookingResult = mysqli_query($conn, $lastBookingQuery);
+            $lastBooking = mysqli_fetch_assoc($lastBookingResult);
+            
+            if ($lastBooking) {
+                $lastNum = intval(substr($lastBooking['booking_id'], 3)) + 1;
+            } else {
+                $lastNum = 1;
+            }
+            
+            $booking_id = 'BKG' . str_pad($lastNum, 5, '0', STR_PAD_LEFT);
+
+            // Create the booking
+            $bookingSql = "INSERT INTO `bookings` (`booking_id`, `customer_id`, `route_id`, `customer_route`, `booked_amount`, `booked_seat`, `booking_created`) 
+                          VALUES ('$booking_id', '$customer_id', '$route_id', '$route', '$amount', '$booked_seat', current_timestamp())";
+            $bookingResult = mysqli_query($conn, $bookingSql);
+            
+            if ($bookingResult) {
+                // Update the seats
+                $seats = get_from_table($conn, "seats", "bus_no", $bus_no, "seat_booked");
+                if ($seats) {
+                    $seats .= "," . $booked_seat;
+                } else {
+                    $seats = $booked_seat;
+                }
+                $updateSeatSql = "UPDATE `seats` SET `seat_booked` = '$seats' WHERE `seats`.`bus_no` = '$bus_no'";
+                mysqli_query($conn, $updateSeatSql);
+                
+                // Store booking details in session for payment page
+                session_start();
+                $_SESSION['booking_id'] = $booking_id;
+                $_SESSION['customer_id'] = $customer_id;
+                $_SESSION['amount'] = $amount;
+                
+                // Redirect to payment page
+                header("Location: payment/index.php");
+                exit();
+            } else {
+                echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error!</strong> Unable to complete booking.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>';
+            }
+        } else {
+            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> Unable to create customer record.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>';
+        }
+    } else {
+        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error!</strong> No route available for selected source and destination.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>';
     }
 }
 ?>
@@ -69,6 +132,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
             background: transparent;
             cursor: default;
         }
+        .selected-seat {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+        #seatsDiagram td:not(.space):hover {
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -81,13 +152,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
                         <label for="sourceSearch" class="form-label">From</label>
                         <select class="form-select" id="sourceSearch" name="sourceSearch" required>
                             <option value="">Select City</option>
-                            <option value="Vellore">Vellore</option>
-                            <option value="Trichy">Trichy</option>
-                            <option value="Tirunelveli">Tirunelveli</option>
-                            <option value="Theni">Theni</option>
                             <option value="Madurai">Madurai</option>
-                            <option value="Karur">Karur</option>
+                            <option value="Trichy">Trichy</option>
                             <option value="Erode">Erode</option>
+                            <option value="Tirunelveli">Tirunelveli</option>
+                            <option value="Vellore">Vellore</option>
+                            <option value="Karur">Karur</option>
                             <option value="Chennai">Chennai</option>
                         </select>
                     </div>
@@ -95,13 +165,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
                         <label for="destinationSearch" class="form-label">Destination</label>
                         <select class="form-select" id="destinationSearch" name="destinationSearch" required>
                             <option value="">Select Destination</option>
-                            <option value="Tiruvannamalai">Tiruvannamalai</option>
-                            <option value="Thanjavur">Thanjavur</option>
-                            <option value="Nagercoil">Nagercoil</option>
-                            <option value="Dindigul">Dindigul</option>
                             <option value="Salem">Salem</option>
-                            <option value="Ariyalur">Ariyalur</option>
+                            <option value="Thanjavur">Thanjavur</option>
                             <option value="Namakkal">Namakkal</option>
+                            <option value="Nagercoil">Nagercoil</option>
+                            <option value="Tiruvannamalai">Tiruvannamalai</option>
+                            <option value="Namakkal">Namakkal</option>
+                            <option value="Ariyalur">Ariyalur</option>
                             <option value="Coimbatore">Coimbatore</option>
                         </select>
                     </div>
@@ -185,11 +255,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
                                 </tr>
                             </table>
                         </div>
+                        <input type="hidden" id="seat_selected" name="seat_selected">
+                        <input type="text" class="form-control mt-2" id="seatInput" readonly placeholder="Selected seat will appear here">
+                    </div>
+                    <div class="mb-3">
+                        <label for="booked_amount" class="form-label">Total Amount</label>
+                        <input type="text" class="form-control" id="bookAmount" name="booked_amount" value="500" readonly>
                     </div>
                     <input type="hidden" id="route_id" name="route_id" value="">
                     <input type="hidden" id="source" name="source" value="">
                     <input type="hidden" id="destination" name="destination" value="">
-                    <input type="hidden" id="seat_selected" name="seat_selected" value="">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="firstName" class="form-label">First Name</label>
@@ -203,6 +278,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">Phone Number</label>
                         <input type="tel" class="form-control" id="phone" name="phone" required>
@@ -247,31 +323,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
                             <option value="Yes">Yes</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="seatInput" class="form-label">Selected Seat</label>
-                        <input type="text" class="form-control" id="seatInput" name="seatInput" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="bookAmount" class="form-label">Total Amount</label>
-                        <input type="text" class="form-control" id="bookAmount" name="bookAmount" value="" readonly>
-                    </div>
                     <script>
-                        // When a seat is selected, set the amount to 500
                         document.addEventListener('DOMContentLoaded', function() {
                             const seats = document.querySelectorAll('#seatsDiagram td:not(.space)');
                             const seatInput = document.getElementById('seatInput');
+                            const seatSelected = document.getElementById('seat_selected');
                             const bookAmount = document.getElementById('bookAmount');
+                            let selectedSeat = null;
+
+                            // Handle seat selection
                             seats.forEach(seat => {
                                 seat.addEventListener('click', function() {
-                                    if (!seat.classList.contains('notAvailable')) {
-                                        seatInput.value = seat.dataset.name;
-                                        bookAmount.value = 500;
+                                    // If seat is already booked, don't allow selection
+                                    if (seat.classList.contains('notAvailable')) {
+                                        return;
                                     }
+
+                                    // Remove previous selection
+                                    if (selectedSeat) {
+                                        selectedSeat.classList.remove('selected-seat');
+                                    }
+
+                                    // Select new seat
+                                    selectedSeat = seat;
+                                    seat.classList.add('selected-seat');
+                                    
+                                    // Update form fields
+                                    const seatNumber = seat.dataset.name;
+                                    console.log('Selected seat:', seatNumber); // Debug log
+                                    
+                                    if (seatInput) seatInput.value = seatNumber;
+                                    if (seatSelected) seatSelected.value = seatNumber;
+                                    if (bookAmount) bookAmount.value = '500';
                                 });
                             });
+
+                            // Form validation
+                            const form = document.getElementById('customerBookingForm');
+                            if (form) {
+                                form.addEventListener('submit', function(e) {
+                                    const selectedSeatValue = seatSelected ? seatSelected.value : '';
+                                    console.log('Form submission - Selected seat:', selectedSeatValue); // Debug log
+                                    
+                                    if (!selectedSeatValue) {
+                                        e.preventDefault();
+                                        alert('Please select a seat before booking!');
+                                        return false;
+                                    }
+                                });
+                            }
                         });
                     </script>
-                    <a href="http://localhost/BusBook/payment/index.html" class="btn btn-primary w-100">Book Ticket</a>
+                    <button type="submit" name="book" class="btn btn-primary w-100">Book Ticket</button>
                 </form>
             </div>
         </div>
