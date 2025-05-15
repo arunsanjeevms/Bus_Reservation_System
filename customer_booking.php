@@ -240,6 +240,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book"])) {
                         </select>
                     </div>
                     <div class="mb-3">
+                        <label for="differentlyAbled" class="form-label">Are you differently abled?</label>
+                        <select class="form-select" id="differentlyAbled" name="differentlyAbled" required>
+                            <option value="">Select Option</option>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="seatInput" class="form-label">Selected Seat</label>
                         <input type="text" class="form-control" id="seatInput" name="seatInput" readonly>
                     </div>

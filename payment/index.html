@@ -75,22 +75,12 @@
                         <p style="text-align: center;">Scan the QR code above with your payment app to complete the transaction.</p>
                         <div style="text-align: center; margin-top: 2rem;">
                             <form id="paymentForm" action="ticket.html" method="GET" onsubmit="return handlePayment(event)">
-                                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 8px; background: #2563eb; color: #fff; font-size: 1.1rem; border: none; cursor: pointer;">
+                                <a href="success.html" class="btn btn-primary" style="display: inline-block; padding: 0.75rem 2rem; border-radius: 8px; background: #2563eb; color: #fff; font-size: 1.1rem; border: none; cursor: pointer; text-decoration: none;">
                                     Complete Payment
-                                </button>
-                                
+                                </a>
                             </form>
                         </div>
-                        <script>
-                        async function handlePayment(event) {
-                            event.preventDefault();
-                            // Call your backend to trigger Twilio SMS
-                            await fetch('notify.php', { method: 'POST' });
-                            // Redirect to ticket details page
-                            window.location.href = 'ticket.html';
-                            return false;
-                        }
-                        </script>
+                       
                     </div>
                 </div>
             </div>

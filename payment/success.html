@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Successful</title>
+    <style>
+        body {
+            background: #f6fff6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .circle {
+            width: 120px;
+            height: 120px;
+            background: #4BB543;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2);
+        }
+        .tick {
+            width: 60px;
+            height: 60px;
+            display: block;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #555;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="circle">
+        <svg class="tick" viewBox="0 0 52 52">
+            <circle cx="26" cy="26" r="25" fill="none"/>
+            <path fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" d="M14 27l7 7 17-17"/>
+        </svg>
+    </div>
+    <h1>Payment Successful</h1>
+    <p>Your payment has been processed successfully.</p>
+
+    <a href="/BusBook/payment/ticket.pdf" download="ticket.pdf" class="download-btn">Download Ticket</a>
+    <style>
+        .download-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: #073ef3;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 24px;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .download-btn:hover {
+            background-color: #399c32;
+        }
+    </style>
+
+</body>
+</html>
