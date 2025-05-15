@@ -239,7 +239,7 @@
 
             <br>
             <center>
-            <a href="http://localhost/BusBook/customer.php"><button class="btn btn-primary"> Book Now !! <i class="fa fa-arrow-down"></i></button></a>
+            <a href="http://localhost/BusBook/customer_booking.php"><button class="btn btn-primary"> Book Now !! <i class="fa fa-arrow-down"></i></button></a>
             </center>
             
         </div>

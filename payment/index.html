@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="tailwindcss-colors.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Bus Ticket Payment</title>
+</head>
+<body>
+    
+    <!-- start: Payment -->
+    <section class="payment-section">
+        <div class="container">
+            <div class="payment-wrapper">
+                <div class="payment-left">
+                    <div class="payment-header">
+                        <div class="payment-header-icon"><i class="ri-bus-2-fill"></i></div>
+                        <div class="payment-header-title">Bus Ticket Summary</div>
+                        <p class="payment-header-description">Review your bus booking and complete your payment below.</p>
+                    </div>
+                    <div class="payment-content">
+                        <div class="payment-body">
+                            <div class="payment-plan">
+                                <div class="payment-plan-type">Bus</div>
+                                <div class="payment-plan-info">
+                                    
+                                    <div class="payment-plan-info-price">Rs.500 per ticket</div>
+                                </div>
+                                <a href="http://localhost/BusBook/customer_booking.php" class="payment-plan-change">Back</a>
+                            </div>
+                            <div class="payment-summary">
+                                <div class="payment-summary-item">
+                                    <div class="payment-summary-name">Number of Tickets</div>
+                                    <div class="payment-summary-price">1</div>
+                                </div>
+                                <div class="payment-summary-item">
+                                    <div class="payment-summary-name">Ticket Price</div>
+                                    <div class="payment-summary-price">Rs.500</div>
+                                </div>
+                                <div class="payment-summary-item">
+                                    <div class="payment-summary-name">Discount</div>
+                                    <div class="payment-summary-price">-</div>
+                                </div>
+                                <div class="payment-summary-divider"></div>
+                                <div class="payment-summary-item payment-summary-total">
+                                    <div class="payment-summary-name">Total</div>
+                                    <div class="payment-summary-price">Rs.500</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-right">
+                    <div class="payment-form">
+                        <h1 class="payment-title">Scan to Pay</h1>
+                        <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <label style="cursor:pointer;">
+                                <input type="file" accept="image/*" style="display:none;">
+                                <img src="./gpay.jpg" alt="Upload GPay" title="Upload GPay Screenshot" style="width:64px; height:64px; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.12); object-fit:cover; border:2px solid #eee;">
+                            </label>
+                            <label style="cursor:pointer;">
+                                <input type="file" accept="image/*" style="display:none;">
+                                <img src="./phonepe.jpg" alt="Upload PhonePe" title="Upload PhonePe Screenshot" style="width:64px; height:64px; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.12); object-fit:cover; border:2px solid #eee;">
+                            </label>
+                            <label style="cursor:pointer;">
+                                <input type="file" accept="image/*" style="display:none;">
+                                <img src="./paytm.png" alt="Upload Paytm" title="Upload Paytm Screenshot" style="width:64px; height:64px; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.12); object-fit:cover; border:2px solid #eee;">
+                            </label>
+                        </div>
+                        <div style="display: flex; justify-content: center; align-items: center; margin: 2rem 0;">
+                            <img src="./upi1.png" alt="QR Code for Payment" style="max-width: 380px; width: 170%; height: auto; border-radius: 12px; box-shadow: 1 2px 8px rgba(0,0,0,0.1);">
+                        </div>
+                        <p style="text-align: center;">Scan the QR code above with your payment app to complete the transaction.</p>
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <form id="paymentForm" action="ticket.html" method="GET" onsubmit="return handlePayment(event)">
+                                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 8px; background: #2563eb; color: #fff; font-size: 1.1rem; border: none; cursor: pointer;">
+                                    Complete Payment
+                                </button>
+                                
+                            </form>
+                        </div>
+                        <script>
+                        async function handlePayment(event) {
+                            event.preventDefault();
+                            // Call your backend to trigger Twilio SMS
+                            await fetch('notify.php', { method: 'POST' });
+                            // Redirect to ticket details page
+                            window.location.href = 'ticket.html';
+                            return false;
+                        }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- end: Payment -->
+
+</body>
+</html> 
+<style>
+.payment-left { 
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+    border-radius: 16px;
+    background: #fff;
+}
+.payment-right {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
+    border-radius: 16px;
+    background: #fff;
+}
+</style>
