@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 16, 2025 at 07:16 AM
+-- Generation Time: May 16, 2025 at 04:09 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,8 +46,8 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`id`, `booking_id`, `customer_id`, `route_id`, `customer_route`, `booked_amount`, `booked_seat`, `booking_created`, `payment_status`, `payment_method`, `payment_date`) VALUES
-(5, 'BKG00001', '927623BCS006', 'RT-1908653', 'Chennai → Coimbatore', 500, '22', '2025-05-16 00:37:23', 'PENDING', NULL, NULL),
-(8, 'BKG00003', '927623BCS008', 'RT-1908653', 'Chennai → Coimbatore', 500, '32', '2025-05-16 10:43:01', 'PENDING', NULL, NULL);
+(8, 'BKG00003', '927623BCS008', 'RT-1908653', 'Chennai → Coimbatore', 500, '32', '2025-05-16 10:43:01', 'PENDING', NULL, NULL),
+(9, 'BKG00004', '927623BCS009', 'RT-1908653', 'Chennai → Coimbatore', 500, '11', '2025-05-16 11:31:52', 'PENDING', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -101,10 +101,8 @@ INSERT INTO `customers` (`id`, `customer_id`, `customer_name`, `customer_phone`,
 (35, '927623BCS002', 'KISHORE', '9123456780', '2025-05-07 11:34:10'),
 (36, '927623BCS003', 'BHAVA', '9988776655', '2025-05-07 11:34:10'),
 (37, '927623BCS004', 'MOHI ASWATH', '9090909090', '2025-05-07 11:34:10'),
-(38, '927623BCS005', 'DHARUN', '9000000001', '2025-05-07 11:34:10'),
 (78, '927623BCS006', 'HARSHAN K', '9876541230', '2025-05-16 00:37:22'),
-(79, '927623BCS007', 'DHARUN  M', '0944335508', '2025-05-16 09:00:49'),
-(81, '927623BCS008', 'DHARUN KUMAR M', '9443355081', '2025-05-16 10:43:01');
+(79, '927623BCS007', 'DHARUN  M', '0944335508', '2025-05-16 09:00:49');
 
 -- --------------------------------------------------------
 
@@ -225,7 +223,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `buses`
@@ -237,7 +235,7 @@ ALTER TABLE `buses`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 
 --
 -- AUTO_INCREMENT for table `routes`
